@@ -255,6 +255,12 @@ Une fois le déploiement terminé :
 https://IP_PUBLIQUE
 ```
 
+Connexion à WordPress :
+
+```text
+https://IP_PUBLIQUE/wp-login.php
+```
+
 Administration WordPress :
 
 ```text
