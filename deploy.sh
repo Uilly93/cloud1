@@ -2,14 +2,17 @@
 
 set -e
 
+aws login
+
 eval "$(aws configure export-credentials --profile cloud1 --format env)"
 
 cd terraform
 
+terraform init
 terraform plan
 terraform apply -auto-approve
 
-IP=$(terraform output -raw public_ip)
+export IP=$(terraform output -raw public_ip)
 
 cd ..
 
@@ -33,7 +36,9 @@ done
 
 echo "EC2 ready"
 
-ansible-playbook \
+ansible-playbook -vvv \
   -i ansible/inventory.ini \
   ansible/playbook.yml \
   --private-key ~/.ssh/aws/cloud1
+
+echo "Build finished, You can now visite https://$IP"
