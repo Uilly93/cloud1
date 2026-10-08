@@ -36,7 +36,7 @@ resource "aws_security_group" "cloud1" {
 }
 
 resource "aws_instance" "ubuntu" {
-
+  count         = 1
   ami           = data.aws_ami.ubuntu.id
   instance_type = "t3.micro"
 

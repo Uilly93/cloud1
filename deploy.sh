@@ -9,16 +9,25 @@ eval "$(aws configure export-credentials --profile cloud1 --format env)"
 cd terraform
 
 terraform init
+terraform validate
 terraform plan
 terraform apply -auto-approve
 
-export IP=$(terraform output -raw public_ip)
+# export IP=$(terraform output -raw public_ips)
+terraform output -json public_ips | jq -r '.[]' > ../ips.txt
 
 cd ..
 
+
 cat > ansible/inventory.ini << EOF
 [cloud1]
-$IP ansible_user=ubuntu
+EOF
+
+while read -r ip; do
+    echo "$ip ansible_user=ubuntu" >> ansible/inventory.ini
+done < ips.txt
+
+cat >> ansible/inventory.ini << EOF
 
 [cloud1:vars]
 ansible_ssh_common_args='-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null'
@@ -41,4 +50,7 @@ ansible-playbook -vvv \
   ansible/playbook.yml \
   --private-key ~/.ssh/aws/cloud1
 
-echo "Build finished, You can now visite https://$IP"
+while read -r ip; do
+    echo "https://$ip is ready !"
+done < ips.txt
+rm -rf ips.txt

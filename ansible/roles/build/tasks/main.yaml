@@ -1,0 +1,11 @@
+- name: Clone repository
+  git:
+    repo: https://github.com/Uilly93/cloud1Inception.git
+    dest: /opt/inception
+    update: yes
+
+- name: Deploy application
+  shell: |
+    export PUB_IP=$(curl https://checkip.amazonaws.com)
+    cd /opt/inception/Inception
+    make
